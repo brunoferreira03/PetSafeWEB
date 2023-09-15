@@ -25,5 +25,3 @@ namespace PetSafeWeb.Data
         }
     }
 }
-
-//not working, dunno why. WC break too.
