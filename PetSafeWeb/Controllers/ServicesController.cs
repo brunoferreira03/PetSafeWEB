@@ -2,124 +2,109 @@
 using Microsoft.EntityFrameworkCore;
 using PetSafeWeb.Data;
 using PetSafeWeb.Helpers.Interfaces;
-using PetSafeWeb.Models.Room_Models;
+using PetSafeWeb.Models.Service_Models;
 using PetSafeWeb.Repositories.Interfaces;
 using System.Threading.Tasks;
 
 namespace PetSafeWeb.Controllers
 {
-    public class RoomsController : Controller
+    public class ServicesController : Controller
     {
         private readonly DataContext _context;
-        private readonly IRoomRepository _roomRepository;
         private readonly IServiceRepository _serviceRepository;
+
         private readonly IConverterHelper _converterHelper;
 
-        public RoomsController(DataContext context,
-            IRoomRepository roomRepository,
-            IConverterHelper converterHelper,
-            IServiceRepository serviceRepository)
+        public ServicesController(DataContext context,
+            IServiceRepository serviceRepository,
+            IConverterHelper converterHelper)
         {
             _context = context;
-            _roomRepository = roomRepository;
-            _converterHelper = converterHelper;
             _serviceRepository = serviceRepository;
+            _converterHelper = converterHelper;
         }
 
-        // GET: Rooms
+        // GET: Services
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Rooms.ToListAsync());
+            return View(await _context.Services.ToListAsync());
         }
 
-        // GET: Rooms/Details/5
+        // GET: Services/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var room = await _roomRepository.GetByIdAsync(id.Value);
+            var service = await _serviceRepository.GetByIdAsync(id.Value);
 
-            if (room == null)
+            if (service == null)
                 return NotFound();
 
-            var model = _converterHelper.ConvertToRoomViewModel(room);
-            model.RoomServices = await _serviceRepository.GetActiveRoomServices(room);
+            var model = _converterHelper.ConvertToServiceViewModel(service);
 
             return View(model);
         }
 
-        // GET: Rooms/Create
+        // GET: Services/Create
         public IActionResult Create()
         {
-            var model = new RoomViewModel
-            {
-                Services = _serviceRepository.GetServicesList(),
-            };
+            var model = new ServiceViewModel();
 
             return View(model);
         }
 
-        // POST: Rooms/Create
+        // POST: Services/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RoomViewModel model)
+        public async Task<IActionResult> Create(ServiceViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var room = _converterHelper.ConvertToRoom(model, true);
-                await _roomRepository.CreateAsync(room);
-
-                // create roomservices
-                await _serviceRepository.CreateRoomServices(room, model.Services);
+                var service = _converterHelper.ConvertToService(model, true);
+                await _serviceRepository.CreateAsync(service);
 
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
 
-        // GET: Rooms/Edit/5
+        // GET: Services/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var room = await _roomRepository.GetByIdAsync(id.Value);
-
-            if (room == null)
+            var service = await _serviceRepository.GetByIdAsync(id.Value);
+            if (service == null)
                 return NotFound();
 
-            var model = _converterHelper.ConvertToRoomViewModel(room);
+            var model = _converterHelper.ConvertToServiceViewModel(service);
 
-            model.RoomServices = await _serviceRepository.GetActiveRoomServices(room);
-            model.Services = _serviceRepository.GetActiveServicesList(model);
-
-            return View(room);
+            return View(model);
         }
 
-        // POST: Rooms/Edit/5
+        // POST: Services/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(RoomViewModel model)
+        public async Task<IActionResult> Edit(ServiceViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var room = _converterHelper.ConvertToRoom(model, false);
-                    room = await _roomRepository.GetByIdAsync(room.Id);
+                    var service = _converterHelper.ConvertToService(model, false);
+                    service = await _serviceRepository.GetByIdAsync(service.Id);
 
-                    await _serviceRepository.CreateRoomServices(room, model.Services);
-
-                    await _roomRepository.UpdateAsync(room);
+                    await _serviceRepository.UpdateAsync(service);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _roomRepository.ExistAsync(model.Id))
+                    if (!await _serviceRepository.ExistAsync(model.Id))
                         return NotFound();
                     else throw;
                 }
@@ -128,26 +113,27 @@ namespace PetSafeWeb.Controllers
             return View(model);
         }
 
-        // GET: Rooms/Delete/5
+        // GET: Services/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var room = await _roomRepository.GetByIdAsync(id.Value);
-            if (room == null)
+            var service = await _serviceRepository.GetByIdAsync(id.Value);
+
+            if (service == null)
                 return NotFound();
 
-            return View(room);
+            return View(service);
         }
 
-        // POST: Rooms/Delete/5
+        // POST: Services/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var room = await _roomRepository.GetByIdAsync(id);
-            await _roomRepository.DeleteAsync(room);
+            var service = await _serviceRepository.GetByIdAsync(id);
+            await _serviceRepository.DeleteAsync(service);
             return RedirectToAction(nameof(Index));
         }
     }

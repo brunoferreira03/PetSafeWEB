@@ -25,5 +25,9 @@ namespace ClassLibrary1.Entities
 
         [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
+
+        public string ImageURL { get; set; }
+
+        public string ImageFullPath { get; set; }
     }
 }

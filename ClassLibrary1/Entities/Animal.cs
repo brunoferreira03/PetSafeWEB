@@ -19,5 +19,9 @@ namespace ClassLibrary1.Entities
         public string TypeOfAnimal { get; set; }
 
         public string? RaceOfAnimal { get; set; }
+
+        public string ImageURL { get; set; }
+
+        public string ImageFullPath { get; set; }
     }
 }

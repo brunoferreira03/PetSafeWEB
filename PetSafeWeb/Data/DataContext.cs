@@ -19,9 +19,14 @@ namespace PetSafeWeb.Data
         
         public DbSet<Appointment> Appointments { get; set; }
 
+        public DbSet<Service> Services { get; set; }
+
+        public DbSet<RoomServices> RoomServices { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
         }
+
     }
 }

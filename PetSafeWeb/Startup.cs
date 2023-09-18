@@ -6,6 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PetSafeWeb.Data;
+using PetSafeWeb.Helpers.Classes;
+using PetSafeWeb.Helpers.Interfaces;
+using PetSafeWeb.Repositories.Classes;
+using PetSafeWeb.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +35,18 @@ namespace PetSafeWeb
             });
 
             services.AddTransient<SeedDb>();
+
+            //Repositories
+            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IAnimalRepository, AnimalRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IDoctorRepository, DoctorRepository>();
+            services.AddScoped<IRoomRepository, RoomRepository>();
+            services.AddScoped<IServiceRepository, ServiceRepository>();
+
+            //Helpers
+            services.AddScoped<IConverterHelper, ConverterHelper>();
+            services.AddScoped<IImageHelper, ImageHelper>();
 
             services.AddControllersWithViews();
         }

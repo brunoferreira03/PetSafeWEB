@@ -24,6 +24,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Animals" asp-action="Index">Animals</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Doctors" asp-action="Index">Doctors</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Rooms" asp-action="Index">Rooms</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Services" asp-action="Index">Services</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Appointments" asp-action="Index">Appointments</a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
