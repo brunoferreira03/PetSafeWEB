@@ -1,7 +1,7 @@
 ﻿using ClassLibrary1.Entities;
 using Microsoft.EntityFrameworkCore;
 using PetSafeWeb.Data;
-using PetSafeWeb.Models.Room_Models;
+using PetSafeWeb.Models;
 using PetSafeWeb.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,90 +33,48 @@ namespace PetSafeWeb.Repositories.Classes
             return list;
         }
 
-        public async Task CreateRoomServices(Room room, List<Service> services)
+        public string GetServiceIds(List<Service> Services)
         {
-            if (services == null)
-                return;
+            string ids = string.Empty;
 
-            foreach (var service in services)
+            foreach (var service in Services)
             {
-                if (await RoomServiceExists(room, service))
-                {
-                    if (!service.IsActive)
-                    {
-                        var roomService = await _context.RoomServices.FirstOrDefaultAsync(rs => rs.RoomId == room.Id && rs.ServiceId == service.Id);
-
-                        _context.RoomServices.Remove(roomService);
-                    }
-                }
-                else
-                {
-                    if (service.IsActive)
-                    {
-                        var serviceToUse = GetServiceByName(service.Name);
-                        serviceToUse.IsActive = true;
-                        var roomService = new RoomServices
-                        {
-                            RoomId = room.Id,
-                            Service = serviceToUse,
-                        };
-                        serviceToUse.IsActive = false;
-
-                        await _context.RoomServices.AddAsync(roomService);
-                    }
-                }
+                if (service.IsActive)
+                ids += service.Id.ToString() + ",";
             }
 
-            await _context.SaveChangesAsync();
+            ids = ids.Substring(0, ids.Length - 1);
+
+            return ids;
         }
 
-        public Service GetServiceByName(string name)
+        public async Task<List<Service>> GetServicesFromString(string source)
         {
-            var service = _context.Services.FirstOrDefault(s => s.Name == name);
+            string[] ids = source.Split(',');
+            List<Service> services = new List<Service>();
 
-            return service;
-        }
-
-        public async Task<bool> RoomServiceExists(Room room, Service service)
-        {
-            if (await _context.RoomServices.AnyAsync(rs => rs.RoomId == room.Id && rs.ServiceId == service.Id))
+            foreach (var item in ids)
             {
-                return true;
+                services.Add(await GetByIdAsync(int.Parse(item)));
             }
-            else return false;
+
+            return services;
         }
 
-        public List<Service> GetActiveServicesList(RoomViewModel model)
+        public List<Service> MatchServicesList(string source)
         {
             var services = GetServicesList();
-            var servicesToUse = new List<Service>();
+            string[] ids = source.Split(',');
 
-            foreach (var service in services)
-            {
-                servicesToUse.Add(service);
-            }
+            if (ids.Length <= 0) return services;
 
-            for (int i = 0; i < model.RoomServices.Count; i++)
+            foreach (var item in ids)
             {
-                foreach (var service in servicesToUse)
+                foreach (var service in services)
                 {
-                    if (service.Id == model.RoomServices[i].ServiceId)
-                    {
+                    if (int.Parse(item) == service.Id)
                         service.IsActive = true;
-                    }
                 }
-            }
-
-            return servicesToUse;
-        }
-
-        public async Task<List<RoomServices>> GetActiveRoomServices(Room room)
-        {
-            var services = _context.RoomServices.Where(r => r.RoomId == room.Id).ToList();
-
-            foreach (var service in services)
-            {
-                service.Service = await GetByIdAsync(service.ServiceId);
             }
 
             return services;

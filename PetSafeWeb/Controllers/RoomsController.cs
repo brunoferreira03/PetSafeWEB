@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClassLibrary1.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetSafeWeb.Data;
 using PetSafeWeb.Helpers.Interfaces;
-using PetSafeWeb.Models.Room_Models;
+using PetSafeWeb.Models;
 using PetSafeWeb.Repositories.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PetSafeWeb.Controllers
@@ -44,7 +46,7 @@ namespace PetSafeWeb.Controllers
                 return NotFound();
 
             var model = _converterHelper.ConvertToRoomViewModel(room);
-            model.RoomServices = await _serviceRepository.GetActiveRoomServices(room);
+            model.Services = await _serviceRepository.GetServicesFromString(room.ServiceIds);
 
             return View(model);
         }
@@ -67,13 +69,13 @@ namespace PetSafeWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoomViewModel model)
         {
+
             if (ModelState.IsValid)
             {
+                model.ServiceIds = _serviceRepository.GetServiceIds(model.Services);
+
                 var room = _converterHelper.ConvertToRoom(model, true);
                 await _roomRepository.CreateAsync(room);
-
-                // create roomservices
-                await _serviceRepository.CreateRoomServices(room, model.Services);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -93,10 +95,9 @@ namespace PetSafeWeb.Controllers
 
             var model = _converterHelper.ConvertToRoomViewModel(room);
 
-            model.RoomServices = await _serviceRepository.GetActiveRoomServices(room);
-            model.Services = _serviceRepository.GetActiveServicesList(model);
+            model.Services = _serviceRepository.MatchServicesList(room.ServiceIds);
 
-            return View(room);
+            return View(model);
         }
 
         // POST: Rooms/Edit/5
@@ -113,7 +114,7 @@ namespace PetSafeWeb.Controllers
                     var room = _converterHelper.ConvertToRoom(model, false);
                     room = await _roomRepository.GetByIdAsync(room.Id);
 
-                    await _serviceRepository.CreateRoomServices(room, model.Services);
+                    room.ServiceIds = _serviceRepository.GetServiceIds(model.Services);
 
                     await _roomRepository.UpdateAsync(room);
                 }

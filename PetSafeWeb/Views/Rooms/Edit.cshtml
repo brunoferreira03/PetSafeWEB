@@ -1,4 +1,4 @@
-﻿@model ClassLibrary1.Entities.Room
+﻿@model RoomViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -18,6 +18,22 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <div class="row">
+                @if (Model.Services != null)
+                {
+                    for (int i = 0; i < Model.Services.Count; i++)
+                    {
+                        <label>
+                            @Html.DisplayName(Model.Services[i].Name)
+                            <input asp-for="@Model.Services[i].IsActive" type="checkbox">
+                            <input asp-for="@Model.Services[i].Name" type="hidden" value="@Model.Services[i].Name " />
+                            <input asp-for="@Model.Services[i].Id" type="hidden" value="@Model.Services[i].Id " />
+                        </label>
+                    }
+
+                }
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -30,5 +46,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

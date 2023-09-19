@@ -1,10 +1,10 @@
 ﻿using ClassLibrary1.Entities;
 using PetSafeWeb.Helpers.Interfaces;
+using PetSafeWeb.Models;
 using PetSafeWeb.Models.AnimalModels;
 using PetSafeWeb.Models.Appointment_Models;
 using PetSafeWeb.Models.ClientModels;
 using PetSafeWeb.Models.DoctorModels;
-using PetSafeWeb.Models.Room_Models;
 using PetSafeWeb.Models.Service_Models;
 
 namespace PetSafeWeb.Helpers.Classes
@@ -57,6 +57,7 @@ namespace PetSafeWeb.Helpers.Classes
             {
                 Id = isNew ? 0 : model.Id,
                 Name = model.Name,
+                ServiceIds = model.ServiceIds,
             };
         }
 
@@ -66,6 +67,7 @@ namespace PetSafeWeb.Helpers.Classes
             {
                 Id = room.Id,
                 Name = room.Name,
+                ServiceIds = room.ServiceIds,
             };
         }
 

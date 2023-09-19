@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace PetSafeWeb.Models.Room_Models
+namespace PetSafeWeb.Models
 {
     public class RoomViewModel : Room
     {
         [Display(Name = "Available Services")]
-        public List<Service> Services;
+        public List<Service> Services { get; set; }
 
         [Display(Name = "Services in Room")]
-        public List<RoomServices> RoomServices;
+        public List<RoomServices> RoomServices { get; set; }
     }
 }

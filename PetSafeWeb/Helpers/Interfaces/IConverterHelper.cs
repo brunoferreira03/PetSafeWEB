@@ -1,9 +1,9 @@
 ﻿using ClassLibrary1.Entities;
+using PetSafeWeb.Models;
 using PetSafeWeb.Models.AnimalModels;
 using PetSafeWeb.Models.Appointment_Models;
 using PetSafeWeb.Models.ClientModels;
 using PetSafeWeb.Models.DoctorModels;
-using PetSafeWeb.Models.Room_Models;
 using PetSafeWeb.Models.Service_Models;
 
 namespace PetSafeWeb.Helpers.Interfaces
