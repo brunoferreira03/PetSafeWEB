@@ -7,46 +7,57 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClassLibrary1.Entities;
 using PetSafeWeb.Data;
+using PetSafeWeb.Repositories.Interfaces;
+using PetSafeWeb.Helpers.Interfaces;
+using PetSafeWeb.Models;
+using PetSafeWeb.Helpers.Classes;
 
 namespace PetSafeWeb.Controllers
 {
     public class DoctorsController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly IConverterHelper _converterHelper;
+        private readonly IImageHelper _imageHelper;
 
-        public DoctorsController(DataContext context)
+        public DoctorsController(IDoctorRepository doctorRepository,
+            IConverterHelper converterHelper,
+            IImageHelper imageHelper)
         {
-            _context = context;
+            _doctorRepository = doctorRepository;
+            _converterHelper = converterHelper;
+            _imageHelper = imageHelper;
         }
 
         // GET: Doctors
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Doctors.ToListAsync());
+            return View(_doctorRepository.GetAll());
         }
 
         // GET: Doctors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var doctor = await _doctorRepository.GetByIdAsync(id.Value);
+
+
             if (doctor == null)
-            {
                 return NotFound();
-            }
 
-            return View(doctor);
+            var model = _converterHelper.ConvertToDoctorViewModel(doctor);
+
+            return View(model);
         }
 
         // GET: Doctors/Create
         public IActionResult Create()
         {
-            return View();
+            var model = new DoctorViewModel();
+
+            return View(model);
         }
 
         // POST: Doctors/Create
@@ -54,31 +65,37 @@ namespace PetSafeWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName")] Doctor doctor)
+        public async Task<IActionResult> Create(DoctorViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(doctor);
-                await _context.SaveChangesAsync();
+                var path = string.Empty;
+
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "Doctors");
+
+                var doctor = _converterHelper.ConvertToDoctor(model, path, true);
+                await _doctorRepository.CreateAsync(doctor);
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(model);
         }
 
         // GET: Doctors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var doctor = await _context.Doctors.FindAsync(id);
+            var doctor = await _doctorRepository.GetByIdAsync(id.Value);
+
             if (doctor == null)
-            {
                 return NotFound();
-            }
-            return View(doctor);
+
+            var model = _converterHelper.ConvertToDoctorViewModel(doctor);
+
+            return View(model);
         }
 
         // POST: Doctors/Edit/5
@@ -86,50 +103,43 @@ namespace PetSafeWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName")] Doctor doctor)
+        public async Task<IActionResult> Edit(DoctorViewModel model)
         {
-            if (id != doctor.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(doctor);
-                    await _context.SaveChangesAsync();
+                    var path = model.ImageURL;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "Doctors");
+
+                    var doctor = await _doctorRepository.GetByIdAsync(model.Id);
+                    doctor = _converterHelper.ConvertToDoctor(model, path, false);
+                    
+
+                    await _doctorRepository.UpdateAsync(doctor);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DoctorExists(doctor.Id))
-                    {
+                    if (!await _doctorRepository.ExistAsync(model.Id))
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(model);
         }
 
         // GET: Doctors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var doctor = await _doctorRepository.GetByIdAsync(id.Value);
             if (doctor == null)
-            {
                 return NotFound();
-            }
 
             return View(doctor);
         }
@@ -139,15 +149,9 @@ namespace PetSafeWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            _context.Doctors.Remove(doctor);
-            await _context.SaveChangesAsync();
+            var doctor = await _doctorRepository.GetByIdAsync(id);
+            await _doctorRepository.DeleteAsync(doctor);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool DoctorExists(int id)
-        {
-            return _context.Doctors.Any(e => e.Id == id);
         }
     }
 }

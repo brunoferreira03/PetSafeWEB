@@ -8,8 +8,5 @@ namespace PetSafeWeb.Models
     {
         [Display(Name = "Available Services")]
         public List<Service> Services { get; set; }
-
-        [Display(Name = "Services in Room")]
-        public List<RoomServices> RoomServices { get; set; }
     }
 }

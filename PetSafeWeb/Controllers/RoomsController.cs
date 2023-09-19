@@ -6,32 +6,39 @@ using PetSafeWeb.Helpers.Interfaces;
 using PetSafeWeb.Models;
 using PetSafeWeb.Repositories.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PetSafeWeb.Controllers
 {
     public class RoomsController : Controller
     {
-        private readonly DataContext _context;
         private readonly IRoomRepository _roomRepository;
         private readonly IServiceRepository _serviceRepository;
         private readonly IConverterHelper _converterHelper;
 
-        public RoomsController(DataContext context,
+        public RoomsController(
             IRoomRepository roomRepository,
             IConverterHelper converterHelper,
             IServiceRepository serviceRepository)
         {
-            _context = context;
             _roomRepository = roomRepository;
             _converterHelper = converterHelper;
             _serviceRepository = serviceRepository;
         }
 
         // GET: Rooms
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Rooms.ToListAsync());
+            var list = _roomRepository.GetAll().OrderBy(r => r.Name);
+
+            List<RoomViewModel> rooms = new List<RoomViewModel>();
+            foreach (var item in list)
+            {
+                var itemToAdd = _converterHelper.ConvertToRoomViewModel(item);
+                rooms.Add(itemToAdd);
+            }
+            return View(rooms);
         }
 
         // GET: Rooms/Details/5

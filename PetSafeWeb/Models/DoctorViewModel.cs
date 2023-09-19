@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace PetSafeWeb.Models.ClientModels
+namespace PetSafeWeb.Models
 {
-    public class ClientViewModel : Client
+    public class DoctorViewModel : Doctor
     {
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }

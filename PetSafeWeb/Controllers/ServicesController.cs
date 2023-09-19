@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PetSafeWeb.Data;
 using PetSafeWeb.Helpers.Interfaces;
-using PetSafeWeb.Models.Service_Models;
+using PetSafeWeb.Models;
 using PetSafeWeb.Repositories.Interfaces;
 using System.Threading.Tasks;
 

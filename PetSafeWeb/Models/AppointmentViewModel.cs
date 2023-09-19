@@ -1,6 +1,6 @@
 ﻿using ClassLibrary1.Entities;
 
-namespace PetSafeWeb.Models.Appointment_Models
+namespace PetSafeWeb.Models
 {
     public class AppointmentViewModel : Appointment
     {

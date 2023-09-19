@@ -21,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\RoomModels\" />
+    <Folder Include="wwwroot\images\Doctors\" />
+    <Folder Include="wwwroot\images\Clients\" />
   </ItemGroup>
 
 </Project>

@@ -1,17 +1,12 @@
 ﻿using ClassLibrary1.Entities;
 using PetSafeWeb.Helpers.Interfaces;
 using PetSafeWeb.Models;
-using PetSafeWeb.Models.AnimalModels;
-using PetSafeWeb.Models.Appointment_Models;
-using PetSafeWeb.Models.ClientModels;
-using PetSafeWeb.Models.DoctorModels;
-using PetSafeWeb.Models.Service_Models;
 
 namespace PetSafeWeb.Helpers.Classes
 {
     public class ConverterHelper : IConverterHelper
     {
-        public Animal ConvertToAnimal(AnimalViewModel model, bool isNew)
+        public Animal ConvertToAnimal(AnimalViewModel model, string path, bool isNew)
         {
             throw new System.NotImplementedException();
         }
@@ -31,24 +26,55 @@ namespace PetSafeWeb.Helpers.Classes
             throw new System.NotImplementedException();
         }
 
-        public Client ConvertToClient(ClientViewModel model, bool isNew)
+        public Client ConvertToClient(ClientViewModel model, string path, bool isNew)
         {
-            throw new System.NotImplementedException();
+            return new Client
+            {
+                Id = isNew ? 0 : model.Id,
+                ImageURL = path,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                PhoneNumber = model.PhoneNumber,
+                PetIds = model.PetIds,
+            };
         }
 
         public ClientViewModel ConvertToClientViewModel(Client client)
         {
-            throw new System.NotImplementedException();
+            return new ClientViewModel
+            {
+                Id = client.Id,
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                Address = client.Address,
+                PhoneNumber = client.PhoneNumber,
+                PetIds = client.PetIds,
+                ImageURL = client.ImageURL,
+            };
         }
 
-        public Doctor ConvertToDoctor(DoctorViewModel model, bool isNew)
+        public Doctor ConvertToDoctor(DoctorViewModel model, string path, bool isNew)
         {
-            throw new System.NotImplementedException();
+            return new Doctor
+            {
+                Id = isNew ? 0 : model.Id,
+                ImageURL = path,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+
+            };
         }
 
         public DoctorViewModel ConvertToDoctorViewModel(Doctor doctor)
         {
-            throw new System.NotImplementedException();
+            return new DoctorViewModel
+            {
+                Id = doctor.Id,
+                FirstName = doctor.FirstName,
+                LastName = doctor.LastName,
+                ImageURL = doctor.ImageURL,
+            };
         }
 
         public Room ConvertToRoom(RoomViewModel model, bool isNew)

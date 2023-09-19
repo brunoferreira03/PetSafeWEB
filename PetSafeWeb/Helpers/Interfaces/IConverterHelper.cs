@@ -1,10 +1,5 @@
 ﻿using ClassLibrary1.Entities;
 using PetSafeWeb.Models;
-using PetSafeWeb.Models.AnimalModels;
-using PetSafeWeb.Models.Appointment_Models;
-using PetSafeWeb.Models.ClientModels;
-using PetSafeWeb.Models.DoctorModels;
-using PetSafeWeb.Models.Service_Models;
 
 namespace PetSafeWeb.Helpers.Interfaces
 {
@@ -20,15 +15,15 @@ namespace PetSafeWeb.Helpers.Interfaces
 
         DoctorViewModel ConvertToDoctorViewModel(Doctor doctor);
 
-        Doctor ConvertToDoctor(DoctorViewModel model, bool isNew);
+        Doctor ConvertToDoctor(DoctorViewModel model, string path, bool isNew);
 
         ClientViewModel ConvertToClientViewModel(Client client);
 
-        Client ConvertToClient(ClientViewModel model, bool isNew);
+        Client ConvertToClient(ClientViewModel model,string path, bool isNew);
 
         AnimalViewModel ConvertToAnimalViewModel(Animal animal);
 
-        Animal ConvertToAnimal(AnimalViewModel model, bool isNew);
+        Animal ConvertToAnimal(AnimalViewModel model, string path, bool isNew);
 
         AppointmentViewModel ConvertToAppointmentViewModel(Appointment appointment);
 
